@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0f14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Axiom">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>Axiom Co-Pilot</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080b10;color:#f5f7fa;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.app{min-height:100vh;display:flex;flex-direction:column;max-width:720px;margin:auto}
+header{padding:calc(18px + env(safe-area-inset-top)) 18px 14px;border-bottom:1px solid #1d2530;display:flex;align-items:center;gap:12px;background:#0b0f14;position:sticky;top:0;z-index:2}
+.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#e9edf2,#596675);color:#081018;display:grid;place-items:center;font-weight:900}
+h1{font-size:20px;margin:0}.status{font-size:12px;color:#8e9aaa;margin-top:2px}
+main{padding:18px;flex:1}.hero{padding:18px;border:1px solid #202b38;border-radius:20px;background:linear-gradient(145deg,#111821,#0c1118)}
+.hero h2{margin:0 0 7px;font-size:25px}.hero p{margin:0;color:#9eabb9;line-height:1.45}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}.card{border:1px solid #202b38;background:#0e141c;border-radius:18px;padding:16px;text-align:left;color:#fff;font-size:15px}.card b{display:block;margin-bottom:6px}.card span{color:#8e9aaa;font-size:12px}
+.chat{margin-top:14px}.messages{min-height:170px;max-height:360px;overflow:auto;padding:8px 0}.msg{padding:12px 14px;border-radius:16px;margin:8px 0;max-width:88%;line-height:1.4;white-space:pre-wrap}.me{background:#253141;margin-left:auto}.ai{background:#111a24;border:1px solid #202b38}
+.inputrow{display:flex;gap:8px;position:sticky;bottom:0;background:#080b10;padding:10px 0 calc(10px + env(safe-area-inset-bottom))}
+input{flex:1;background:#111821;border:1px solid #273341;color:#fff;border-radius:16px;padding:14px;font-size:16px;outline:none}button{border:0;border-radius:15px;padding:12px 15px;background:#e9edf2;color:#0a1017;font-weight:700}.mic{background:#18222d;color:#fff}
+.small{font-size:11px;color:#687585;text-align:center;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="logo">A</div><div><h1>Axiom Co-Pilot</h1><div class="status">Ready • Your co-pilot, under your control</div></div></header>
+<main>
+<section class="hero"><h2>Kumusta, pare. 👊</h2><p>Axiom V2 is ready. Chat, use your voice, and jump directly into the mode you need.</p></section>
+<section class="grid">
+<button class="card" onclick="quick('Architecture')"><b>🏗️ Architecture</b><span>Design, plans, renders</span></button>
+<button class="card" onclick="quick('Projects')"><b>📋 Projects</b><span>Tasks and project thinking</span></button>
+<button class="card" onclick="quick('Ideas')"><b>💡 Ideas</b><span>Brainstorm and strategy</span></button>
+<button class="card" onclick="quick('Safety')"><b>🛡️ Safety</b><span>Quick safety guidance</span></button>
+</section>
+<section class="chat">
+<div id="messages" class="messages"><div class="msg ai">Axiom online. Sabihin mo lang kung ano ang gagawin natin.</div></div>
+<div class="inputrow"><input id="input" placeholder="Message Axiom..." autocomplete="off"><button class="mic" id="mic">🎙️</button><button id="send">Send</button></div>
+<div class="small">Prototype only: no hidden access to your phone. Permissions remain under your control.</div>
+</section>
+</main>
+</div>
+<script>
+const messages=document.getElementById('messages'), input=document.getElementById('input');
+function add(text,who){const d=document.createElement('div');d.className='msg '+(who==='me'?'me':'ai');d.textContent=text;messages.appendChild(d);messages.scrollTop=messages.scrollHeight}
+function reply(q){setTimeout(()=>add('Nandito ako, pare. Sa V2 prototype na ito, local demo muna ang response. Para maging tunay na AI co-pilot, ikokonekta natin ito sa secure AI backend — walang API key na ilalagay sa app.','ai'),350)}
+function send(){const q=input.value.trim();if(!q)return;add(q,'me');input.value='';reply(q)}
+function quick(mode){add(mode+' mode','me');add('Sige pare — '+mode+' mode. Sabihin mo ang task at tutulungan kitang i-structure step by step.','ai')}
+document.getElementById('send').onclick=send;input.addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(SpeechRecognition){const r=new SpeechRecognition();r.lang='en-US';r.interimResults=false;r.onresult=e=>{input.value=e.results[0][0].transcript};document.getElementById('mic').onclick=()=>r.start()}else document.getElementById('mic').onclick=()=>alert('Voice input is not supported by this browser. Try Safari or Chrome with microphone permission.');
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
+</script>
+</body></html>
